@@ -21,13 +21,30 @@ public final class R {
         public static final int activity_vertical_margin=0x7f040001;
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
+        public static final int handler=0x7f020000;
+        public static final int ic_launcher=0x7f020001;
+        public static final int pause_btn=0x7f020002;
+        public static final int play_btn=0x7f020003;
+        public static final int seek_comp=0x7f020004;
+        public static final int seek_progress=0x7f020005;
+        public static final int seekbar=0x7f020006;
+        public static final int seekbar_bg=0x7f020007;
     }
     public static final class id {
-        public static final int action_settings=0x7f080000;
+        public static final int action_settings=0x7f080008;
+        public static final int btn_next=0x7f080006;
+        public static final int btn_pause=0x7f080005;
+        public static final int btn_play=0x7f080004;
+        public static final int btn_puase=0x7f080003;
+        public static final int progress_bar=0x7f080001;
+        public static final int song_list=0x7f080002;
+        public static final int song_title=0x7f080007;
+        public static final int textView1=0x7f080000;
     }
     public static final class layout {
         public static final int activity_player=0x7f030000;
+        public static final int items_songlist=0x7f030001;
+        public static final int songlist=0x7f030002;
     }
     public static final class menu {
         public static final int player=0x7f070000;

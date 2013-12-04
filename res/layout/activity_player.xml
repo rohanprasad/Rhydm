@@ -6,11 +6,61 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="#333333"
     tools:context=".Player" >
 
     <TextView
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="#FF0000"
         android:text="@string/hello_world" />
+
+    <SeekBar
+        android:id="@+id/progress_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:thumb="@drawable/handler"
+        android:layout_margin="20dp" />
+    
+    <Button
+        android:id="@+id/song_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btn_puase"
+        android:layout_below="@+id/btn_puase"
+        android:layout_marginTop="90dp" 
+        android:text="PlayList"/>
+    
+
+    <ImageButton
+        android:id="@+id/btn_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/progress_bar"
+        android:layout_below="@+id/progress_bar"
+        android:layout_marginTop="80dp"
+        android:background="@null"
+        android:src="@drawable/play_btn" />
+    
+
+    <ImageButton
+        android:id="@+id/btn_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/progress_bar"
+        android:layout_alignTop="@+id/btn_play"
+        android:layout_marginRight="62dp"
+        android:background="@null"
+        android:src="@drawable/pause_btn" />
+
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/btn_pause"
+        android:layout_below="@+id/progress_bar"
+        android:text="Next" />
 
 </RelativeLayout>
