@@ -13,14 +13,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Player extends Activity {
 
 	private ImageButton b_play;
-	private ImageButton b_pause;
+	private ImageButton b_stop;
 	private Button s_list;
 	private Button b_next;
+	private Button b_prev;
 	private MediaPlayer m_player = new MediaPlayer();;
 	private Music_Manager m_manager;
 	private static ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
@@ -50,9 +50,12 @@ public class Player extends Activity {
         
         
         b_play = (ImageButton) findViewById(R.id.btn_play);
-        b_pause = (ImageButton) findViewById(R.id.btn_pause);
+        b_stop = (ImageButton) findViewById(R.id.btn_stop);
+        
         s_list = (Button) findViewById(R.id.song_list);
         b_next = (Button) findViewById(R.id.btn_next);
+        b_prev = (Button) findViewById(R.id.btn_prev);
+        
         tv = (TextView) findViewById(R.id.textView1);
         
         
@@ -72,30 +75,28 @@ public class Player extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if(m_player.isPlaying())
+				if(!(m_player.isPlaying()))
 				{
-					Toast.makeText(getApplicationContext(),"Already Playing",Toast.LENGTH_SHORT).show();
+					m_player.start();
+					b_play.setImageResource(R.drawable.pause_btn);
 				}
 				else {
-					m_player.start();
+					m_player.pause();
+					b_play.setImageResource(R.drawable.play_btn);					
 				}
 			}
 		});
         
-        //pause if playing
-        b_pause.setOnClickListener(new View.OnClickListener() {
+        
+        b_stop.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if(m_player.isPlaying())
-				{
-					m_player.pause();
-				}
-				else
-				{
-					Toast.makeText(getApplicationContext(),"Already Paused",Toast.LENGTH_SHORT).show();
-				}
+				m_player.stop();
+				b_play.setImageResource(R.drawable.play_btn);
+				playSong(is);
+				m_player.pause();
 			}
 		});
         
@@ -121,7 +122,23 @@ public class Player extends Activity {
 					is++;
 				m_player.stop();
 				playSong(is);
+				b_play.setImageResource(R.drawable.pause_btn);
 				
+			}
+		});
+        
+        b_prev.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if(is==0)
+					is= max_songs;
+				else
+					is--;
+				
+				playSong(is);
+				b_play.setImageResource(R.drawable.pause_btn);
 			}
 		});
         
