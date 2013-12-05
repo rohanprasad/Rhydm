@@ -3,7 +3,9 @@ package mdg.iitr.rhydm;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+
 import android.os.Environment;
+import android.provider.MediaStore;
 
 public class Music_Manager {
 	
@@ -11,6 +13,11 @@ public class Music_Manager {
 		
 		public Music_Manager(){
 		};
+		
+		String[] song = {MediaStore.Audio.Media._ID,MediaStore.Audio.Media.DISPLAY_NAME,MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DATA}; 
+		
+		
+		
 		
 		public ArrayList<HashMap<String,String>> getList(){
 			

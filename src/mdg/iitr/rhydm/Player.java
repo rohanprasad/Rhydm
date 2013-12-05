@@ -37,7 +37,7 @@ public class Player extends Activity {
         // To prevent Screen Rotation
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
         {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
         else
         {
@@ -103,7 +103,7 @@ public class Player extends Activity {
             @Override
             public void onClick(View arg0) {
             	
-               Intent i = new Intent(getApplicationContext(), SongList.class);
+               Intent i = new Intent(getApplicationContext(), Song_List.class);
                 startActivity(i);
             }
         });
@@ -161,18 +161,4 @@ public class Player extends Activity {
     	}
     	
     }
-
-
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		is = Globals.Songid;
-		m_player.stop();
-		playSong(is);
-	}
-    
-    
-    
 }

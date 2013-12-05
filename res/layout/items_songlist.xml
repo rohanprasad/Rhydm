@@ -2,17 +2,20 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#333333"
-    android:padding="5dp" >
+    android:orientation="vertical" >
     
-	<TextView 
+	<TextView
 	    android:id="@+id/song_title"
 	    android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        
-        android:padding="10dp"
-        android:textColor="#ff0000"/>   
-    
+	    android:layout_height="fill_parent"
+	    android:textSize="20sp"
+	    android:padding="10dp"/>
+	
+	<TextView 
+	    android:id="@+id/song_art"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:textSize="16sp"
+	    android:paddingBottom="6dp"/>
+	
 </LinearLayout>
