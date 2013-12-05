@@ -49,9 +49,11 @@ public class SongList extends ListActivity {
 			public void onItemClick(AdapterView<?> arg0, View v, int position,long id) {
 				// TODO Auto-generated method stub
 				
-				Intent i = new Intent(getApplicationContext(), Player.class);
+				/*Intent i = new Intent(getApplicationContext(), Player.class);
 				i.putExtra("Index",position);
-				setResult(RESULT_OK, i);
+				startActivityForResult(i,100);
+				finish();*/
+				Globals.Songid = position;
 				finish();
 			}
 		});

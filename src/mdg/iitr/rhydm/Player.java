@@ -21,7 +21,7 @@ public class Player extends Activity {
 	private Button s_list;
 	private Button b_next;
 	private Button b_prev;
-	private MediaPlayer m_player = new MediaPlayer();;
+	private MediaPlayer m_player = new MediaPlayer();
 	private Music_Manager m_manager;
 	private static ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
 	private TextView tv;
@@ -33,10 +33,7 @@ public class Player extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-        
-        
-        
-        
+                
         // To prevent Screen Rotation
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
         {
@@ -164,5 +161,18 @@ public class Player extends Activity {
     	}
     	
     }
+
+
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		is = Globals.Songid;
+		m_player.stop();
+		playSong(is);
+	}
+    
+    
     
 }
