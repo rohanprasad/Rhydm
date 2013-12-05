@@ -8,3 +8,4 @@ Seekbar is currently not working.
 -Basic functionalities
 -play pause stop
 -next and previous
+-playing from list working
