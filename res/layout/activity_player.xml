@@ -73,8 +73,18 @@
         android:id="@+id/tv_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/textView1"
-        android:layout_toRightOf="@+id/song_list"
+        android:layout_alignBaseline="@+id/song_list"
+        android:layout_alignBottom="@+id/song_list"
+        android:layout_alignLeft="@+id/btn_prev"
+        android:text="@string/hello_world"
+        android:textColor="#FF0000" />
+
+    <TextView
+        android:id="@+id/tv_time_elapsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btn_prev"
+        android:layout_below="@+id/song_list"
         android:text="@string/hello_world"
         android:textColor="#FF0000" />
 

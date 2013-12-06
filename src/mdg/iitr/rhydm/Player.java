@@ -6,6 +6,7 @@ import java.util.List;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -30,9 +31,14 @@ public class Player extends Activity {
 	private static ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
 	private TextView tv;
 	private TextView song_length;
+	private TextView time_elap;
+	Handler s_bar_handler = new Handler();
 	static int max_length;
 	static int is = 0;
 	static int max_songs = 0;
+	static int new_pos = 0;
+	boolean wait = false;
+	static int wait_pos = 0;
 	
 	
     @Override
@@ -61,6 +67,9 @@ public class Player extends Activity {
         
         tv = (TextView) findViewById(R.id.textView1);
         song_length = (TextView) findViewById(R.id.tv_duration);
+        time_elap = (TextView) findViewById(R.id.tv_time_elapsed);
+        
+        s_bar = (SeekBar) findViewById(R.id.progress_bar);
         
         
         m_manager= new Music_Manager();
@@ -74,8 +83,31 @@ public class Player extends Activity {
         m_player.pause();
         
              
-        
-        
+        s_bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+			
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+				m_player.seekTo(new_pos);
+				wait = false;
+				seekUpdate();
+			}
+			
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+				wait = true;
+			}
+			
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				// TODO Auto-generated method stub
+				if(fromUser)
+				{
+					new_pos = progress;
+				}
+			}
+		});
         
         
         
@@ -166,11 +198,15 @@ public class Player extends Activity {
     		m_player.setDataSource(songsList.get(index).get("Path"));
     		m_player.prepare();
     		m_player.start();
-    		max_length = 0 + (int)(Math.random() * ((240000 - 0) + 1));
+    		max_length = m_player.getDuration();
+    		max_length /= 1000;
+    		int mins = max_length / 60;
+    		int secs = max_length % 60;
     		//Toast.makeText(getApplicationContext(),""+ max_lengths, Toast.LENGTH_SHORT).show();
-    		song_length.setText(""+max_length);
+    		song_length.setText(mins+":"+secs);
     		
     		seekb();
+    		seekUpdate();
     		String titles = songsList.get(index).get("Title");
     		tv.setText(titles);
     	}
@@ -182,7 +218,33 @@ public class Player extends Activity {
     
     public void seekb()
     {
-    	s_bar = (SeekBar) findViewById(R.id.progress_bar);
-    	s_bar.setMax(max_length);
+    	
+    	s_bar.setMax(m_player.getDuration());
     }
+    
+    
+    Runnable runner = new Runnable() {
+		
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			seekUpdate();
+		}
+	};
+	
+	public void seekUpdate(){
+		int c_pos = m_player.getCurrentPosition();
+		if(!wait)
+		{
+			s_bar.setProgress(c_pos);
+		}
+		c_pos /= 1000;
+		int mins = c_pos/60;
+		int secs = c_pos%60;
+		if(secs<10)
+			time_elap.setText(mins+" : 0"+secs);
+		else
+			time_elap.setText(mins+" : "+secs);
+		s_bar_handler.postDelayed(runner, 1000);
+	}
 }

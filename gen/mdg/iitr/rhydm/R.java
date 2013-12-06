@@ -30,18 +30,19 @@ public final class R {
         public static final int stop=0x7f020006;
     }
     public static final class id {
-        public static final int Music_List=0x7f08000a;
-        public static final int action_settings=0x7f08000b;
+        public static final int Music_List=0x7f08000b;
+        public static final int action_settings=0x7f08000c;
         public static final int btn_next=0x7f080003;
         public static final int btn_play=0x7f080002;
         public static final int btn_prev=0x7f080004;
         public static final int btn_stop=0x7f080005;
         public static final int progress_bar=0x7f080001;
-        public static final int song_art=0x7f080009;
+        public static final int song_art=0x7f08000a;
         public static final int song_list=0x7f080006;
-        public static final int song_title=0x7f080008;
+        public static final int song_title=0x7f080009;
         public static final int textView1=0x7f080000;
         public static final int tv_duration=0x7f080007;
+        public static final int tv_time_elapsed=0x7f080008;
     }
     public static final class layout {
         public static final int activity_player=0x7f030000;
