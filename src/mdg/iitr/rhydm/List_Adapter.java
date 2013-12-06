@@ -36,7 +36,7 @@ public class List_Adapter extends ArrayAdapter<String> {
 		
 		try{
 		String temp = Description.get(position);
-		String temp1 = temp.substring(0, temp.indexOf("||")-4);
+		String temp1 = temp.substring(0, temp.indexOf("||"));
 		String temp2 = temp.substring((temp.indexOf("||")) + 2 , temp.length());
 		song_t.setText(temp1);
 		song_a.setText(temp2);

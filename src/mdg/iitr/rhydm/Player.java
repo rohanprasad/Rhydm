@@ -2,6 +2,7 @@ package mdg.iitr.rhydm;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -12,7 +13,9 @@ import android.content.res.Configuration;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Player extends Activity {
 
@@ -22,9 +25,12 @@ public class Player extends Activity {
 	private Button b_next;
 	private Button b_prev;
 	private MediaPlayer m_player = new MediaPlayer();
+	private SeekBar s_bar;
 	private Music_Manager m_manager;
 	private static ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
 	private TextView tv;
+	private TextView song_length;
+	static int max_length;
 	static int is = 0;
 	static int max_songs = 0;
 	
@@ -54,6 +60,7 @@ public class Player extends Activity {
         b_prev = (Button) findViewById(R.id.btn_prev);
         
         tv = (TextView) findViewById(R.id.textView1);
+        song_length = (TextView) findViewById(R.id.tv_duration);
         
         
         m_manager= new Music_Manager();
@@ -65,7 +72,15 @@ public class Player extends Activity {
         
         playSong(is);
         m_player.pause();
-                
+        
+             
+        
+        
+        
+        
+        
+        
+        
         //play if paused
         b_play.setOnClickListener(new View.OnClickListener() {
 			
@@ -151,14 +166,23 @@ public class Player extends Activity {
     		m_player.setDataSource(songsList.get(index).get("Path"));
     		m_player.prepare();
     		m_player.start();
+    		max_length = 0 + (int)(Math.random() * ((240000 - 0) + 1));
+    		//Toast.makeText(getApplicationContext(),""+ max_lengths, Toast.LENGTH_SHORT).show();
+    		song_length.setText(""+max_length);
     		
+    		seekb();
     		String titles = songsList.get(index).get("Title");
     		tv.setText(titles);
     	}
     	catch(Exception e)
     	{
     		e.printStackTrace();
-    	}
-    	
+    	}    	
+    }
+    
+    public void seekb()
+    {
+    	s_bar = (SeekBar) findViewById(R.id.progress_bar);
+    	s_bar.setMax(max_length);
     }
 }

@@ -1,6 +1,8 @@
 package mdg.iitr.rhydm;
 
+import java.util.List;
+
 public class Globals {
 
-	static int Songid ;
+	static List<String> all_list ;
 }

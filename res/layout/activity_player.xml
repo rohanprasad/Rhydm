@@ -21,7 +21,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView1"
-        android:thumb="@drawable/handler"
+        android:thumb="@drawable/handler"  
         android:layout_margin="20dp" />
     
     <ImageButton
@@ -68,5 +68,14 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="25dp"
         android:text="PlayList" />
+
+    <TextView
+        android:id="@+id/tv_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/textView1"
+        android:layout_toRightOf="@+id/song_list"
+        android:text="@string/hello_world"
+        android:textColor="#FF0000" />
 
 </RelativeLayout>

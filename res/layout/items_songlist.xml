@@ -9,13 +9,17 @@
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:textSize="20sp"
-	    android:padding="10dp"/>
+	    android:paddingTop="10dp"
+	    android:typeface="sans"
+	    android:maxLines="1"
+	    android:paddingBottom="6dp"/>
 	
 	<TextView 
 	    android:id="@+id/song_art"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:textSize="16sp"
-	    android:paddingBottom="6dp"/>
+	    android:paddingBottom="6dp"
+	    android:textColor="#313131"/>
 	
 </LinearLayout>
