@@ -1,37 +1,33 @@
 package mdg.iitr.rhydm;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
+import android.database.Cursor;
+import android.text.TextUtils.TruncateAt;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Player extends Activity {
 
 	private ImageButton b_play;
-	private ImageButton b_stop;
-	private Button s_list;
-	private Button b_next;
-	private Button b_prev;
-	private MediaPlayer m_player = new MediaPlayer();
-	private SeekBar s_bar;
-	private Music_Manager m_manager;
-	private static ArrayList<HashMap<String, String>> songsList = new ArrayList<HashMap<String, String>>();
+	private ImageButton b_next;
+	private ImageButton b_prev;
 	private TextView tv;
 	private TextView song_length;
 	private TextView time_elap;
+	private Button s_list;
+	private MediaPlayer m_player = new MediaPlayer();
+	private SeekBar s_bar;
+	
+	private static boolean first_time = true;
 	Handler s_bar_handler = new Handler();
 	static int max_length;
 	static int is = 0;
@@ -39,50 +35,66 @@ public class Player extends Activity {
 	static int new_pos = 0;
 	boolean wait = false;
 	static int wait_pos = 0;
+
+	String paths;
+	String[] projection = {	MediaStore.Audio.Media._ID,
+			MediaStore.Audio.Media.TITLE,
+			MediaStore.Audio.Media.ARTIST,
+			MediaStore.Audio.Media.DATA,
+			MediaStore.Audio.Media.DURATION
+			};
+	String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
+	String order = MediaStore.Audio.Media.TITLE;
+	Cursor c;
+
 	
-	
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
-                
-        // To prevent Screen Rotation
-        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-        {
-        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
-        else
-        {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
         
-        
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         
         b_play = (ImageButton) findViewById(R.id.btn_play);
-        b_stop = (ImageButton) findViewById(R.id.btn_stop);
+        b_next = (ImageButton) findViewById(R.id.btn_next);
+        b_prev = (ImageButton) findViewById(R.id.btn_prev);
         
         s_list = (Button) findViewById(R.id.song_list);
-        b_next = (Button) findViewById(R.id.btn_next);
-        b_prev = (Button) findViewById(R.id.btn_prev);
+
         
         tv = (TextView) findViewById(R.id.textView1);
+        tv.setSelected(true);
         song_length = (TextView) findViewById(R.id.tv_duration);
         time_elap = (TextView) findViewById(R.id.tv_time_elapsed);
         
         s_bar = (SeekBar) findViewById(R.id.progress_bar);
         
+
         
-        m_manager= new Music_Manager();
+        if(first_time)
+        {
+        	c = this.managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null,  order+" COLLATE NOCASE");
+        	Globals.cursor = c;
+        	first_time = false;
+        }
+        else
+        	c = Globals.cursor;
         
-        // get the list of songs
-        songsList = m_manager.getList();
-        
-        max_songs=songsList.size()-1;
-        
-        playSong(is);
+        c.moveToFirst();
+        paths = c.getString(3);
+        listplay(c);
         m_player.pause();
         
-             
+        
+        
+
+        
+        max_songs=c.getCount();
+        
+       // playSong(is);
+        //m_player.pause();
+        
         s_bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 			
 			@Override
@@ -131,20 +143,6 @@ public class Player extends Activity {
 			}
 		});
         
-        
-        b_stop.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				m_player.stop();
-				b_play.setImageResource(R.drawable.play_btn);
-				playSong(is);
-				m_player.pause();
-			}
-		});
-        
-        // show song List (NOT WORKING)
         s_list.setOnClickListener(new View.OnClickListener() {
         	 
             @Override
@@ -161,11 +159,18 @@ public class Player extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if(is==max_songs)
+				{
+					c.moveToFirst();
 					is=0;
+				}
 				else
+				{	
+					c.moveToNext();
 					is++;
+				}
 				m_player.stop();
-				playSong(is);
+				listplay(c);
+				//playSong(is);
 				b_play.setImageResource(R.drawable.pause_btn);
 				
 			}
@@ -177,12 +182,29 @@ public class Player extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				if(is==0)
-					is= max_songs;
+				{
+					c.moveToLast();
+					is = max_songs;
+				}
 				else
+				{
+					c.moveToPrevious();
 					is--;
-				
-				playSong(is);
+				}
+					
+				listplay(c);
 				b_play.setImageResource(R.drawable.pause_btn);
+			}
+		});
+        
+        m_player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+			
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				// TODO Auto-generated method stub
+				c.moveToNext();
+				m_player.pause();
+				listplay(c);
 			}
 		});
         
@@ -190,30 +212,30 @@ public class Player extends Activity {
 
     
     
-    //Function to play a song
-    public void playSong(int index)
+
+    
+    public void listplay(Cursor cs)
     {
-    	try{
-    		m_player.reset();
-    		m_player.setDataSource(songsList.get(index).get("Path"));
-    		m_player.prepare();
-    		m_player.start();
-    		max_length = m_player.getDuration();
+    	try {
+			m_player.reset();
+			m_player.setDataSource(cs.getString(3));
+			m_player.prepare();
+			m_player.start();
+			max_length = m_player.getDuration();
     		max_length /= 1000;
     		int mins = max_length / 60;
     		int secs = max_length % 60;
-    		//Toast.makeText(getApplicationContext(),""+ max_lengths, Toast.LENGTH_SHORT).show();
     		song_length.setText(mins+":"+secs);
+    		tv.setText(c.getString(1));
     		
     		seekb();
     		seekUpdate();
-    		String titles = songsList.get(index).get("Title");
-    		tv.setText(titles);
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}    	
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
     }
     
     public void seekb()
@@ -247,4 +269,30 @@ public class Player extends Activity {
 			time_elap.setText(mins+" : "+secs);
 		s_bar_handler.postDelayed(runner, 1000);
 	}
+
+
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		Globals.c_pos = c.getPosition();
+	}
+
+
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		
+		c.moveToPosition(Globals.c_pos);
+		if(Globals.list_sel)
+		{
+			m_player.pause();
+			listplay(c);
+			Globals.list_sel = false;
+		}
+	}
+	
 }

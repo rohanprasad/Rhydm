@@ -1,8 +1,10 @@
 package mdg.iitr.rhydm;
 
-import java.util.List;
+import android.database.Cursor;
 
 public class Globals {
 
-	static List<String> all_list ;
+	static int c_pos;
+	static Cursor cursor;
+	static boolean list_sel = false;
 }
