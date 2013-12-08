@@ -5,13 +5,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.database.Cursor;
-import android.text.TextUtils.TruncateAt;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RatingBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -26,6 +30,9 @@ public class Player extends Activity {
 	private Button s_list;
 	private MediaPlayer m_player = new MediaPlayer();
 	private SeekBar s_bar;
+	private SharedPreferences rating_list;
+	private SharedPreferences.Editor rating_list_editor;
+	private RatingBar rating_bar;
 	
 	private static boolean first_time = true;
 	Handler s_bar_handler = new Handler();
@@ -70,6 +77,12 @@ public class Player extends Activity {
         
         s_bar = (SeekBar) findViewById(R.id.progress_bar);
         
+        rating_bar = (RatingBar) findViewById(R.id.ratingBar1);
+        
+        
+
+
+        		
 
         
         if(first_time)
@@ -80,6 +93,13 @@ public class Player extends Activity {
         }
         else
         	c = Globals.cursor;
+        
+       if(c.isClosed())
+       {
+        	c = this.managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null,  order+" COLLATE NOCASE");
+        	Globals.cursor = c;
+        	first_time = false;
+        }
         
         c.moveToFirst();
         paths = c.getString(3);
@@ -197,6 +217,30 @@ public class Player extends Activity {
 			}
 		});
         
+        rating_bar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+			
+			@Override
+			public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+				// TODO Auto-generated method stub
+				if(fromUser)
+				{
+					String name = c.getString(0).toString();
+					Context context = getApplicationContext();
+			        rating_list = context.getSharedPreferences("rating_file", Context.MODE_PRIVATE);
+			        rating_list_editor = rating_list.edit();
+			        if(rating_list.contains(name))
+			        {
+			        	rating_list_editor.remove(name);
+			        	rating_list_editor.putFloat(name, rating);
+			        }
+			        else{
+			        	rating_list_editor.putFloat(name, rating);
+			        }
+			        rating_list_editor.commit();					
+				}
+			}
+		});
+        
         m_player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 			
 			@Override
@@ -227,6 +271,11 @@ public class Player extends Activity {
     		int secs = max_length % 60;
     		song_length.setText(mins+":"+secs);
     		tv.setText(c.getString(1));
+    		Context context = getApplicationContext();
+	        rating_list = context.getSharedPreferences("rating_file", Context.MODE_PRIVATE);
+	        String song_id = c.getString(0);
+    		Float ratings = rating_list.getFloat(song_id, (float) 0);
+    		rating_bar.setRating(ratings);
     		
     		seekb();
     		seekUpdate();
@@ -294,5 +343,42 @@ public class Player extends Activity {
 			Globals.list_sel = false;
 		}
 	}
+
+
+
+
+
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		
+		AlertDialog.Builder exit_dialogs = new AlertDialog.Builder(Player.this);
+		exit_dialogs.setTitle("Exit");
+		exit_dialogs.setMessage("Are you sure you wanna exit Rhydm ?")
+					.setCancelable(false)
+					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							m_player.stop();
+							Player.super.onBackPressed();
+						}
+					})
+					.setNegativeButton("No", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							dialog.cancel();
+						}
+					});
+				
+		AlertDialog exit_dialog = exit_dialogs.create();
+		exit_dialog.show();
+		
+	}
+	
+	
 	
 }
