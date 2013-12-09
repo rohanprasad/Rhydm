@@ -1,5 +1,7 @@
 package mdg.iitr.rhydm;
 
+import android.media.AudioManager;
+import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,30 +20,33 @@ import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.text.TextUtils;
 
 public class Player extends Activity {
 
 	private ImageButton b_play;
 	private ImageButton b_next;
 	private ImageButton b_prev;
+	private ImageButton s_list;
 	private TextView tv;
 	private TextView song_length;
 	private TextView time_elap;
-	private Button s_list;
 	private MediaPlayer m_player = new MediaPlayer();
 	private SeekBar s_bar;
 	private SharedPreferences rating_list;
 	private SharedPreferences.Editor rating_list_editor;
 	private RatingBar rating_bar;
+	AudioManager my_audiomanager;
 	
 	private static boolean first_time = true;
 	Handler s_bar_handler = new Handler();
 	static int max_length;
-	static int is = 0;
+	static int is;
 	static int max_songs = 0;
 	static int new_pos = 0;
 	boolean wait = false;
 	static int wait_pos = 0;
+	static int perm;
 
 	String paths;
 	String[] projection = {	MediaStore.Audio.Media._ID,
@@ -67,7 +72,7 @@ public class Player extends Activity {
         b_next = (ImageButton) findViewById(R.id.btn_next);
         b_prev = (ImageButton) findViewById(R.id.btn_prev);
         
-        s_list = (Button) findViewById(R.id.song_list);
+        s_list = (ImageButton) findViewById(R.id.song_list);
 
         
         tv = (TextView) findViewById(R.id.textView1);
@@ -81,29 +86,45 @@ public class Player extends Activity {
         
         
 
+        OnAudioFocusChangeListener afchange = new OnAudioFocusChangeListener() {
+			
+			@Override
+			public void onAudioFocusChange(int focusChange) {
+				// TODO Auto-generated method stub
+			
+				if(focusChange == AudioManager.AUDIOFOCUS_LOSS)
+				{
+					m_player.stop();
+					finish();
+				}
+				if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT)
+				{
+					m_player.pause();
+				}
+				if(focusChange == AudioManager.AUDIOFOCUS_GAIN)
+				{
+					m_player.start();
+				}
+			}
+		};
+        
+		Context app_c = getApplicationContext();
+		my_audiomanager = (AudioManager) app_c.getSystemService(Context.AUDIO_SERVICE);
+        perm =  my_audiomanager.requestAudioFocus(afchange, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        		
+
 
         
-        if(first_time)
-        {
-        	c = this.managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null,  order+" COLLATE NOCASE");
-        	Globals.cursor = c;
-        	first_time = false;
-        }
-        else
-        	c = Globals.cursor;
-        
-       if(c.isClosed())
-       {
-        	c = this.managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null,  order+" COLLATE NOCASE");
-        	Globals.cursor = c;
-        	first_time = false;
-        }
+     	c = this.managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null,  order+" COLLATE NOCASE");
+      	Globals.cursor = c;
+       	first_time = false;
         
         c.moveToFirst();
+        is = c.getPosition();
         paths = c.getString(3);
-        listplay(c);
+        if(perm == AudioManager.AUDIOFOCUS_REQUEST_GRANTED);
+        	listplay(c);
         m_player.pause();
         
         
@@ -180,14 +201,13 @@ public class Player extends Activity {
 				// TODO Auto-generated method stub
 				if(is==max_songs)
 				{
-					c.moveToFirst();
 					is=0;
 				}
 				else
 				{	
-					c.moveToNext();
 					is++;
 				}
+				c.moveToPosition(is);
 				m_player.stop();
 				listplay(c);
 				//playSong(is);
@@ -203,15 +223,13 @@ public class Player extends Activity {
 				// TODO Auto-generated method stub
 				if(is==0)
 				{
-					c.moveToLast();
 					is = max_songs;
 				}
 				else
 				{
-					c.moveToPrevious();
 					is--;
 				}
-					
+				c.moveToPosition(is);
 				listplay(c);
 				b_play.setImageResource(R.drawable.pause_btn);
 			}
@@ -246,7 +264,8 @@ public class Player extends Activity {
 			@Override
 			public void onCompletion(MediaPlayer mp) {
 				// TODO Auto-generated method stub
-				c.moveToNext();
+				is++;
+				c.moveToPosition(is);
 				m_player.pause();
 				listplay(c);
 			}
@@ -260,31 +279,38 @@ public class Player extends Activity {
     
     public void listplay(Cursor cs)
     {
-    	try {
-			m_player.reset();
-			m_player.setDataSource(cs.getString(3));
-			m_player.prepare();
-			m_player.start();
-			max_length = m_player.getDuration();
-    		max_length /= 1000;
-    		int mins = max_length / 60;
-    		int secs = max_length % 60;
-    		song_length.setText(mins+":"+secs);
-    		tv.setText(c.getString(1));
-    		Context context = getApplicationContext();
-	        rating_list = context.getSharedPreferences("rating_file", Context.MODE_PRIVATE);
-	        String song_id = c.getString(0);
-    		Float ratings = rating_list.getFloat(song_id, (float) 0);
-    		rating_bar.setRating(ratings);
-    		
-    		seekb();
-    		seekUpdate();
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
+    	if(perm == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
+    	{
+	    	try {
+				m_player.reset();
+				m_player.setDataSource(cs.getString(3));
+				m_player.prepare();
+				m_player.start();
+				max_length = m_player.getDuration();
+	    		max_length /= 1000;
+	    		int mins = max_length / 60;
+	    		int secs = max_length % 60;
+	    		if(secs<10)
+	    			song_length.setText(mins+" : 0"+secs);
+	    		else
+	    			song_length.setText(mins+" : "+secs);
+	    		tv.setText(c.getString(1));
+	    		tv.setSelected(true);
+	    		tv.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+	    		Context context = getApplicationContext();
+		        rating_list = context.getSharedPreferences("rating_file", Context.MODE_PRIVATE);
+		        String song_id = c.getString(0);
+	    		Float ratings = rating_list.getFloat(song_id, (float) 0);
+	    		rating_bar.setRating(ratings);
+	    		b_play.setImageResource(R.drawable.pause_btn);
+	    		seekb();
+	    		seekUpdate();
+	
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
     }
     
     public void seekb()
@@ -336,6 +362,7 @@ public class Player extends Activity {
 		super.onResume();
 		
 		c.moveToPosition(Globals.c_pos);
+		is = c.getPosition();
 		if(Globals.list_sel)
 		{
 			m_player.pause();

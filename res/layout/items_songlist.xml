@@ -12,7 +12,9 @@
 	    android:paddingTop="10dp"
 	    android:typeface="sans"
 	    android:maxLines="1"
-	    android:paddingBottom="6dp"/>
+	    android:paddingBottom="6dp"
+	    android:textColor="#FF3333"
+	    android:background="#333333"/>
 	
 	<TextView 
 	    android:id="@+id/song_art"
@@ -20,6 +22,7 @@
 	    android:layout_height="fill_parent"
 	    android:textSize="16sp"
 	    android:paddingBottom="6dp"
-	    android:textColor="#313131"/>
+	    android:textColor="#FF9999"
+	    android:background="#333333"/>
 	
 </LinearLayout>

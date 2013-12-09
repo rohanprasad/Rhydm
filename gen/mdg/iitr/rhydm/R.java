@@ -23,13 +23,13 @@ public final class R {
     public static final class drawable {
         public static final int handler=0x7f020000;
         public static final int ic_launcher=0x7f020001;
-        public static final int next=0x7f020002;
-        public static final int pause_btn=0x7f020003;
-        public static final int play_btn=0x7f020004;
-        public static final int prev=0x7f020005;
-        public static final int seek_comp=0x7f020006;
-        public static final int seekbar=0x7f020007;
-        public static final int stop=0x7f020008;
+        public static final int list=0x7f020002;
+        public static final int next=0x7f020003;
+        public static final int pause_btn=0x7f020004;
+        public static final int play_btn=0x7f020005;
+        public static final int prev=0x7f020006;
+        public static final int seek_comp=0x7f020007;
+        public static final int seekbar=0x7f020008;
     }
     public static final class id {
         public static final int Music_List=0x7f08000b;
